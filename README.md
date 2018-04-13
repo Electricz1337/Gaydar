@@ -1,8 +1,6 @@
-# Gaydar
+# PUBG Radar
 
-## the gay radar for gay people
+## https://github.com/Electricz1337/PUBG_radar_setup for installing it
 
-### Known pastes using this radar source:
- * Albedo
-
-signed coolmemes from UC
+### Thanks to the original creator
+https://github.com/EmberVulpix/Gaydar
