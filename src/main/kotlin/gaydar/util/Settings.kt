@@ -176,14 +176,14 @@ class Settings
         val drawDaMap_Key : String = Input.Keys.toString(Input.Keys.F3),
         val drawmenu_Key : String = Input.Keys.toString(Input.Keys.F12),
 
-        val filterWeapon_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_1),
-        val filterLvl2_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_2),
-        val filterHeals_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_3),
+        val filterWeapon_Key : String = Input.Keys.toString(Input.Keys.NUM_1),
+        val filterLvl2_Key : String = Input.Keys.toString(Input.Keys.NUM_2),
+        val filterHeals_Key : String = Input.Keys.toString(Input.Keys.NUM_3),
 
-        val filterThrow_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_4),
-        val filterAttach_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_5),
-        val filterScope_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_6),
-        val filterAmmo_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_7),
+        val filterThrow_Key : String = Input.Keys.toString(Input.Keys.NUM_4),
+        val filterAttach_Key : String = Input.Keys.toString(Input.Keys.NUM_5),
+        val filterScope_Key : String = Input.Keys.toString(Input.Keys.NUM_6),
+        val filterAmmo_Key : String = Input.Keys.toString(Input.Keys.NUM_7),
 
         val camera_zoom_Minus_Key : String = Input.Keys.toString(Input.Keys.MINUS),
         val camera_zoom_Plus_Key : String = Input.Keys.toString(Input.Keys.PLUS),
