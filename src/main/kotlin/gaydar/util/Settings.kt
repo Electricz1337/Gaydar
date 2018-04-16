@@ -78,20 +78,7 @@ class Settings
         val Mini14 : Boolean = false,
         var SKS : Boolean = false,
         val AK47 : Boolean = false,
-       // val DP28 : Boolean = false,
-       // val Saiga12 : Boolean = false,
         val UMP : Boolean = false,
-       // val Vector : Boolean = false,
-       // val UZI : Boolean = false,
-
-        //
-        // Pistols
-        //
-       // val G18 : Boolean = false,
-       // val Rhino45 : Boolean = false,
-       // val M1911 : Boolean = false,
-       // val R1895 : Boolean = false,
-       // val M9 : Boolean = false,
 
         //
         // Meds
