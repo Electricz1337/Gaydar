@@ -1445,7 +1445,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               "Item_Weapon_SKS_C",
               "Item_Weapon_AK47_C",
               "Item_Weapon_UMP_C",
-              "Item_Weapon_FlareGun_C",
+              "Item_Weapon_FlareGun_C"
       )
     }
 
@@ -1643,7 +1643,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               jsettings.FlashHiderAR && "Item_Attach_Weapon_Muzzle_FlashHider_Large_C" in items ||
               jsettings.CompensatorAR && "Item_Attach_Weapon_Muzzle_Compensator_Medium_C" in items ||
               jsettings.Foregrip && "Item_Attach_Weapon_Lower_Foregrip_C" in items ||
-              jsettings.AngledForegrip && "Item_Attach_Weapon_Lower_AngledForeGrip_C" in items ||
+              jsettings.AngledForegrip && "Item_Attach_Weapon_Lower_AngledForeGrip_C" in items
 
       ) {
         // If The Setting is true (boolean) and Item_ is in Items, Don't draw disabled item.
