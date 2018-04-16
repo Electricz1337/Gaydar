@@ -78,20 +78,20 @@ class Settings
         val Mini14 : Boolean = false,
         var SKS : Boolean = false,
         val AK47 : Boolean = false,
-        val DP28 : Boolean = false,
-        val Saiga12 : Boolean = false,
+       // val DP28 : Boolean = false,
+       // val Saiga12 : Boolean = false,
         val UMP : Boolean = false,
-        val Vector : Boolean = false,
-        val UZI : Boolean = false,
+       // val Vector : Boolean = false,
+       // val UZI : Boolean = false,
 
         //
         // Pistols
         //
-        val G18 : Boolean = false,
-        val Rhino45 : Boolean = false,
-        val M1911 : Boolean = false,
-        val R1895 : Boolean = false,
-        val M9 : Boolean = false,
+       // val G18 : Boolean = false,
+       // val Rhino45 : Boolean = false,
+       // val M1911 : Boolean = false,
+       // val R1895 : Boolean = false,
+       // val M9 : Boolean = false,
 
         //
         // Meds
@@ -129,12 +129,12 @@ class Settings
         /// Default Item Information Toggles
         // -1 Disabled
         // 1  Enabled
-        var filterWeapon : Int = -1,
-        var filterAttach : Int = -1,
-        var filterScope : Int = -1,
-        var filterHeals : Int = -1,
-        var filterAmmo : Int = 1,
-        var filterThrow : Int = 1,
+        var filterWeapon : Int = 1,
+        var filterAttach : Int = 1,
+        var filterScope : Int = 1,
+        var filterHeals : Int = 1,
+        var filterAmmo : Int = -1,
+        var filterThrow : Int = -1,
 
         // Draw Compass
         var drawcompass : Int = -1,
