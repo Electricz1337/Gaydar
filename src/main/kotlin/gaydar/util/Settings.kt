@@ -116,12 +116,12 @@ class Settings
         /// Default Item Information Toggles
         // -1 Disabled
         // 1  Enabled
-        var filterWeapon : Int = 1,
-        var filterAttach : Int = 1,
-        var filterScope : Int = 1,
-        var filterHeals : Int = 1,
-        var filterAmmo : Int = -1,
-        var filterThrow : Int = -1,
+        var filterWeapon : Int = -1,
+        var filterAttach : Int = -1,
+        var filterScope : Int = -1,
+        var filterHeals : Int = -1,
+        var filterAmmo : Int = 1,
+        var filterThrow : Int = 1,
 
         // Draw Compass
         var drawcompass : Int = -1,
