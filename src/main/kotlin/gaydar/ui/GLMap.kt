@@ -1444,23 +1444,8 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               "Item_Weapon_M16A4_C",
               "Item_Weapon_SKS_C",
               "Item_Weapon_AK47_C",
-              "Item_Weapon_DP28_C",
-              "Item_Weapon_Saiga12_C",
               "Item_Weapon_UMP_C",
-              "Item_Weapon_Vector_C",
-              "Item_Weapon_UZI_C",
-              "Item_Weapon_VSS_C",
-              "Item_Weapon_Thompson_C",
-              "Item_Weapon_Berreta686_C",
-              "Item_Weapon_Winchester_C",
-              "Item_Weapon_Win94_C",
-              "Item_Weapon_G18_C",
-              "Item_Weapon_SawenOff_C",
-              "Item_Weapon_Rhino_C",
               "Item_Weapon_FlareGun_C",
-              "Item_Weapon_M1911_C",
-              "Item_Weapon_NagantM1895_C",
-              "Item_Weapon_M9_C"
       )
     }
 
@@ -1635,16 +1620,11 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               jsettings.Groza && "Item_Weapon_Groza_C" in items ||
               jsettings.HK416 && "Item_Weapon_HK416_C" in items ||
               jsettings.SCARL && "Item_Weapon_SCAR-L_C" in items ||
-              jsettings.SCARL && "Item_Weapon_SCAR-L_C" in items ||
               jsettings.Mini14 && "Item_Weapon_Mini14_C" in items ||
               jsettings.M16A4 && "Item_Weapon_M16A4_C" in items ||
               jsettings.SKS && "Item_Weapon_SKS_C" in items ||
               jsettings.AK47 && "Item_Weapon_AK47_C" in items ||
-              jsettings.DP28 && "Item_Weapon_DP28_C" in items ||
-              jsettings.Saiga12 && "Item_Weapon_Saiga12_C" in items ||
               jsettings.UMP && "Item_Weapon_UMP_C" in items ||
-              jsettings.UZI && "Item_Weapon_UZI_C" in items ||
-              jsettings.Vector && "Item_Weapon_Vector_C" in items ||
 
 
               jsettings.QDSnipe && "Item_Attach_Weapon_Magazine_ExtendedQuickDraw_SniperRifle_C" in items ||
@@ -1665,12 +1645,6 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               jsettings.Foregrip && "Item_Attach_Weapon_Lower_Foregrip_C" in items ||
               jsettings.AngledForegrip && "Item_Attach_Weapon_Lower_AngledForeGrip_C" in items ||
 
-
-              jsettings.G18 && "Item_Weapon_G18_C" in items ||
-              jsettings.Rhino45 && "Item_Weapon_Rhino_C" in items ||
-              jsettings.M1911 && "Item_Weapon_M1911_C" in items ||
-              jsettings.R1895 && "Item_Weapon_NagantM1895_C" in items ||
-              jsettings.M9 && "Item_Weapon_M9_C" in items
       ) {
         // If The Setting is true (boolean) and Item_ is in Items, Don't draw disabled item.
       }
@@ -1772,7 +1746,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
             {
               actor.isGroggying ->
               {
-                hpred.draw(spriteBatch, "DOWNED", sx + 40, windowHeight - sy + -42)
+                hpred.draw(spriteBatch, "Knocked", sx + 40, windowHeight - sy + -42)
               }
               actor.isReviving  ->
               {
@@ -1823,7 +1797,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
             {
               actor.isGroggying ->
               {
-                hpred.draw(spriteBatch, "DOWNED", sx + 40, windowHeight - sy + -16)
+                hpred.draw(spriteBatch, "Knocked", sx + 40, windowHeight - sy + -16)
               }
               actor.isReviving  ->
               {
