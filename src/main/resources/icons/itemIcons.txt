@@ -236,7 +236,7 @@ Item_Attach_Weapon_Upper_DotSight_01_C
   index: -1
 Item_Attach_Weapon_Upper_Holosight_C
   rotate: false
-  xy: 64,768
+  xy: 0,0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -397,7 +397,7 @@ Item_Weapon_AWM_C
   index: -1
 Item_Weapon_Berreta686_C
   rotate: false
-  xy: 128, 320
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -418,7 +418,7 @@ Item_Weapon_FlashBang_C
   index: -1
 Item_Weapon_G18_C
   rotate: false
-  xy: 192, 384 
+  xy: 0, 0 
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -537,21 +537,21 @@ Item_Weapon_Pan_C
   index: -1
 Item_Weapon_Rhino_C
   rotate: false
-  xy: 256, 384
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Weapon_Saiga12_C
   rotate: false
-  xy: 64, 320
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Weapon_SawenOff_C
   rotate: false
-  xy: 192, 320
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -580,7 +580,7 @@ Item_Weapon_SmokeBomb_C
 Item_Weapon_Thompson_C
   rotate: false
   xy: 192, 448
-  size: 64, 64
+  size: 0, 0
   orig: 64, 64
   offset: 0, 0
   index: -1
@@ -593,35 +593,35 @@ Item_Weapon_UMP_C
   index: -1
 Item_Weapon_UZI_C
   rotate: false
-  xy: 0, 448
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Weapon_Vector_C
   rotate: false
-  xy: 128, 448
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Weapon_VSS_C
   rotate: false
-  xy: 64, 576
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Weapon_Win94_C
   rotate: false
-  xy: 0, 576
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Weapon_Winchester_C
   rotate: false
-  xy: 0, 576
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
