@@ -516,7 +516,7 @@ Item_Weapon_Mk14_C
   index: -1
 Item_Weapon_Molotov_C
   rotate: false
-  xy: 128, 192
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
