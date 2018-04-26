@@ -11,6 +11,30 @@ enum class LogLevel
   Info
 }
 
+class Rolling(private val size: Int) {
+  private var total = 0f
+  private var index = 0
+  private val samples: FloatArray
+
+  val average: Float
+    get() = total / size
+
+  init {
+    samples = FloatArray(size)
+    for (i in 0 until size) samples[i] = 0f
+  }
+
+  fun add(x: Float) {
+    if (x < 20 && average > 300){ for (i in 0 until size) samples[i] = x; total = x*size; return }
+    if (x > 300 && average < 180){ for (i in 0 until size) samples[i] = x; total = x*size; return }
+    total -= samples[index]
+    samples[index] = x
+    total += x
+    if (++index == size) index = 0
+  }
+}
+
+
 var logLevel = Off
 
 inline fun info(info : () -> String)
