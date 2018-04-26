@@ -89,7 +89,7 @@ Item_Attach_Weapon_Magazine_Extended_Large_C
   index: -1
 Item_Attach_Weapon_Magazine_Extended_Medium_C
   rotate: false
-  xy: 64, 640
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -110,7 +110,7 @@ Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Large_C
   index: -1
 Item_Attach_Weapon_Magazine_ExtendedQuickDraw_Medium_C
   rotate: false
-  xy: 64, 704
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -131,7 +131,7 @@ Item_Attach_Weapon_Muzzle_Compensator_Large_C
   index: -1
 Item_Attach_Weapon_Muzzle_Compensator_Medium_C
   rotate: false
-  xy: 256, 640
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -145,14 +145,14 @@ Item_Attach_Weapon_Muzzle_Compensator_SniperRifle_C
   index: -1
 Item_Attach_Weapon_Muzzle_FlashHider_Large_C
   rotate: false
-  xy: 512, 768
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Attach_Weapon_Muzzle_FlashHider_Medium_C
   rotate: false
-  xy: 256, 640
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -173,7 +173,7 @@ Item_Attach_Weapon_Muzzle_Suppressor_Large_C
   index: -1
 Item_Attach_Weapon_Muzzle_Suppressor_Medium_C
   rotate: false
-  xy: 256,704
+  xy: 0,0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -411,7 +411,7 @@ Item_Weapon_DP28_C
   index: -1
 Item_Weapon_FlashBang_C
   rotate: false
-  xy: 64, 192
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -432,14 +432,14 @@ Item_Weapon_Grenade_C
   index: -1
 Item_Weapon_FlareGun_C
   rotate: false
-  xy: 256, 192
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
   index: -1
 Item_Ammo_Flare_C
   rotate: false
-  xy: 320, 192
+  xy: 0, 0
   size: 64, 64
   orig: 64, 64
   offset: 0, 0
@@ -579,7 +579,7 @@ Item_Weapon_SmokeBomb_C
   index: -1
 Item_Weapon_Thompson_C
   rotate: false
-  xy: 192, 448
+  xy: 0, 0
   size: 0, 0
   orig: 64, 64
   offset: 0, 0
