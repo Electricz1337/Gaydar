@@ -82,6 +82,13 @@ import kotlin.collections.component2
 import kotlin.math.absoluteValue
 import kotlin.math.asin
 import kotlin.math.pow
+import com.badlogic.gdx.math.MathUtils
+import gaydar.util.Rolling
+import java.awt.Font
+import com.badlogic.gdx.math.Matrix4
+
+
+
 
 typealias renderInfo = tuple4<Actor, Float, Float, Float>
 
@@ -112,7 +119,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
 
   fun show() {
     val config = Lwjgl3ApplicationConfiguration()
-    config.setTitle("[${localAddr.hostAddress} ${sniffOption.name}] - Radar")
+    config.setTitle("[${localAddr.hostAddress} ${sniffOption.name}] - Gaydar v6.9")
     config.setWindowIcon(Files.FileType.Internal, "icon.png")
     config.useOpenGL3(false, 2, 1)
     config.setWindowedMode(initialWindowWidth.toInt(), initialWindowWidth.toInt())
@@ -136,8 +143,10 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
   lateinit var largeFont: BitmapFont
   lateinit var littleFont: BitmapFont
   lateinit var fontCamera: OrthographicCamera
+  lateinit var playerCamera: OrthographicCamera
   lateinit var camera: OrthographicCamera
   lateinit var mapCamera: OrthographicCamera
+  lateinit var isolatedCamera: OrthographicCamera
   lateinit var miniMapCamera: OrthographicCamera
   lateinit var alarmSound: Sound
   lateinit var pawnAtlas: TextureAtlas
@@ -153,6 +162,8 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
   private lateinit var jetski: Texture
   private lateinit var player: Texture
   private lateinit var playersight: Texture
+  private lateinit var oldTransformMatrix: Matrix4
+  var mx4Font = Matrix4()
 
   private lateinit var hubFont: BitmapFont
   private lateinit var hubFontShadow: BitmapFont
@@ -196,6 +207,8 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
   private var drawmenu = jsettings.drawmenu
   private var toggleView = jsettings.toggleView
   private var drawDaMap = jsettings.drawDaMap
+  private var northMiniMap = jsettings.northMiniMap
+  private var onlyNorthMap = jsettings.onlyNorthMap
 
   // Please change your pre-build settings in Settings.kt
   // You can change them in Settings.json after you run the game once too.
@@ -222,7 +235,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
   private var prevScreenY = -1f
   private var screenOffsetX = 0f
   private var screenOffsetY = 0f
-
+  private var angleSmoother = Rolling(5)
 
   val miniMapWindowWidth = jsettings.miniMapWindowWidth
   val miniMapRadius = jsettings.miniMapRadius
@@ -274,8 +287,9 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
   fun mapToWindow(length: Float) = length / (mapCamera.zoom * windowToMapUnit)
 
 
-  override fun scrolled(amount: Int): Boolean {
 
+
+  override fun scrolled(amount: Int): Boolean {
     if (mapCamera.zoom >= 0.01f && mapCamera.zoom <= 1f) {
       mapCamera.zoom *= 1.05f.pow(amount)
       miniMapCamera.zoom = if (mapCamera.zoom > 1 / 8f) 1 / 2f else 1 / 4f
@@ -302,9 +316,13 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
         return true
       }
       LEFT -> {
-        dragging = true
-        prevScreenX = screenX.toFloat()
-        prevScreenY = screenY.toFloat()
+        if (onlyNorthMap != 1) {
+          dragging = true
+          prevScreenX = screenX.toFloat()
+          prevScreenY = screenY.toFloat()
+        }else{
+          println("[ERROR] to drag the map disable North Mode")
+        }
         return true
       }
       MIDDLE -> {
@@ -318,8 +336,6 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
   override fun keyDown(keycode: Int): Boolean {
 
     when (keycode) {
-
-
     // Change Player Info
       Input.Keys.valueOf(jsettings.nameToogle_Key) -> {
         if (nameToggles < 5) {
@@ -382,6 +398,10 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
     // Toggle Da Minimap
       Input.Keys.valueOf(jsettings.drawDaMap_Key) -> drawDaMap = drawDaMap * -1
 
+    //Toggle only north
+      Input.Keys.valueOf(jsettings.northMiniMap_Key) -> northMiniMap = northMiniMap * -1
+      Input.Keys.valueOf(jsettings.onlyNorthMap_Key) -> onlyNorthMap = onlyNorthMap * -1
+
     // Toggle Menu
       Input.Keys.valueOf(jsettings.drawmenu_Key) -> drawmenu = drawmenu * -1
 
@@ -410,6 +430,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
       prevScreenX = screenX.toFloat()
       prevScreenY = screenY.toFloat()
     }
+
     return true
   }
 
@@ -428,8 +449,17 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
     shapeRenderer = ShapeRenderer()
     Gdx.input.inputProcessor = this
     mapCamera = OrthographicCamera(windowWidth, windowHeight)
+    isolatedCamera = OrthographicCamera(windowWidth, windowHeight)
     miniMapCamera = OrthographicCamera()
+    oldTransformMatrix = spriteBatch.getTransformMatrix().cpy();
     with(mapCamera) {
+      setToOrtho(true, windowWidth * windowToMapUnit, windowHeight * windowToMapUnit)
+      zoom = 1 / 4f
+      update()
+      position.set(mapWidth / 2, mapWidth / 2, 0f)
+      update()
+    }
+    with(isolatedCamera) {
       setToOrtho(true, windowWidth * windowToMapUnit, windowHeight * windowToMapUnit)
       zoom = 1 / 4f
       update()
@@ -444,6 +474,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
     }
     camera = mapCamera
     fontCamera = OrthographicCamera(initialWindowWidth, initialWindowWidth)
+    playerCamera = OrthographicCamera(initialWindowWidth, initialWindowWidth)
     alarmSound = Gdx.audio.newSound(Gdx.files.internal("Alarm.wav"))
     glTexParameterfv(GL_TEXTURE_2D, GL_TEXTURE_BORDER_COLOR, floatArrayOf(bgColor.r, bgColor.g, bgColor.b, bgColor.a))
     mapErangel = Texture(Gdx.files.internal("maps/Erangel_Minimap.png"), null, true).apply {
@@ -518,7 +549,8 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
             markerAtlas.findRegion("marker1"), markerAtlas.findRegion("marker2"),
             markerAtlas.findRegion("marker3"), markerAtlas.findRegion("marker4"),
             markerAtlas.findRegion("marker5"), markerAtlas.findRegion("marker6"),
-            markerAtlas.findRegion("marker7"), markerAtlas.findRegion("marker8")
+            markerAtlas.findRegion("marker7"), markerAtlas.findRegion("marker8"),
+            markerAtlas.findRegion("marker8"), markerAtlas.findRegion("marker8")
     )
 
     val generatorHub = FreeTypeFontGenerator(Gdx.files.internal("font/AGENCYFB.TTF"))
@@ -593,6 +625,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
 
   private val dirUnitVector = Vector2(1f, 0f)
 
+
   override fun render() {
     Gdx.gl.glClearColor(bgColor.r, bgColor.g, bgColor.b, bgColor.a)
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
@@ -606,9 +639,25 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
         selfDirection = rotation.y
       }
     }
+
     val (selfX, selfY) = selfCoords
-    //move camera
+
+    angleSmoother.add(selfDirection);
+    val avgAng = angleSmoother.average
+
     mapCamera.position.set(selfCoords.x + screenOffsetX, selfCoords.y + screenOffsetY, 0f)
+    playerCamera.up.set(0f, 1f, 0f)
+    mapCamera.up.set(0f,-1f,0f)
+    when(onlyNorthMap){
+      1 -> { mapCamera.rotate(avgAng + 90)
+        playerCamera.rotate(avgAng + 90)
+      }
+
+    }
+    isolatedCamera.position.set(selfCoords.x + screenOffsetX, selfCoords.y + screenOffsetY, 0f)
+    isolatedCamera.zoom = mapCamera.zoom
+    isolatedCamera.update()
+    playerCamera.update()
     mapCamera.update()
 
     val mapRegion = Rectangle().apply {
@@ -692,6 +741,13 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
 
     val numKills = playerNumKills[selfStateID] ?: 0
     val zero = numKills.toString()
+
+    paint(playerCamera.combined){
+      safeZoneHint()
+      drawPlayerSprites(parachutes, players)
+      drawPlayerInfos(players)
+    }
+
     paint(fontCamera.combined) {
       val timeHints = if (RemainingTime > 0) "${RemainingTime}s"
       else "${MatchElapsedMinutes}min"
@@ -936,11 +992,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
       }
       littleFont.draw(spriteBatch, "$pinDistance", x, windowHeight - y)
 
-      safeZoneHint()
-      drawPlayerSprites(parachutes, players)
-      drawPlayerInfos(players)
     }
-
 
     Gdx.gl.glEnable(GL20.GL_BLEND)
     shapeRenderer.projectionMatrix = camera.combined
@@ -964,7 +1016,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
 
     }
     Gdx.gl.glDisable(GL20.GL_BLEND)
-    clipBound.set(miniMapRegion)
+    clipBound.set(miniMapRegion) //REPLACE
     camera = miniMapCamera
 
     if (drawDaMap == 1) {
@@ -1181,9 +1233,15 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
     Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT)
     val (selfX, selfY) = selfCoords
     miniMapCamera.apply {
+      up.set(0f, 1f, 0f);
       position.set(selfX, selfY, 0f)
+      when(northMiniMap){
+        1 -> rotate(selfDirection - 90)
+        -1 -> rotate(180f)
+      }
       update()
     }
+
     spriteBatch.projectionMatrix = miniMapCamera.combined
     paint {
       draw(
@@ -1216,12 +1274,11 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
 
     val miniMapWidth = windowToMap(miniMapWindowWidth)
     val (rx, ry) = windowToMap(windowWidth, windowHeight).sub(miniMapWidth, miniMapWidth)
-    spriteBatch.projectionMatrix = mapCamera.combined
+    spriteBatch.projectionMatrix = isolatedCamera.combined
     paint {
-
       draw(miniMap, rx, ry, miniMapWidth, miniMapWidth)
     }
-    shapeRenderer.projectionMatrix = mapCamera.combined
+    shapeRenderer.projectionMatrix = isolatedCamera.combined
     Gdx.gl.glLineWidth(2f)
     draw(Line) {
       color = BLACK
@@ -1444,8 +1501,23 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               "Item_Weapon_M16A4_C",
               "Item_Weapon_SKS_C",
               "Item_Weapon_AK47_C",
+              "Item_Weapon_DP28_C",
+              "Item_Weapon_Saiga12_C",
               "Item_Weapon_UMP_C",
-              "Item_Weapon_FlareGun_C"
+              "Item_Weapon_Vector_C",
+              "Item_Weapon_UZI_C",
+              "Item_Weapon_VSS_C",
+              "Item_Weapon_Thompson_C",
+              "Item_Weapon_Berreta686_C",
+              "Item_Weapon_Winchester_C",
+              "Item_Weapon_Win94_C",
+              "Item_Weapon_G18_C",
+              "Item_Weapon_SawenOff_C",
+              "Item_Weapon_Rhino_C",
+              "Item_Weapon_FlareGun_C",
+              "Item_Weapon_M1911_C",
+              "Item_Weapon_NagantM1895_C",
+              "Item_Weapon_M9_C"
       )
     }
 
@@ -1620,11 +1692,16 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               jsettings.Groza && "Item_Weapon_Groza_C" in items ||
               jsettings.HK416 && "Item_Weapon_HK416_C" in items ||
               jsettings.SCARL && "Item_Weapon_SCAR-L_C" in items ||
+              jsettings.SCARL && "Item_Weapon_SCAR-L_C" in items ||
               jsettings.Mini14 && "Item_Weapon_Mini14_C" in items ||
               jsettings.M16A4 && "Item_Weapon_M16A4_C" in items ||
               jsettings.SKS && "Item_Weapon_SKS_C" in items ||
               jsettings.AK47 && "Item_Weapon_AK47_C" in items ||
+              jsettings.DP28 && "Item_Weapon_DP28_C" in items ||
+              jsettings.Saiga12 && "Item_Weapon_Saiga12_C" in items ||
               jsettings.UMP && "Item_Weapon_UMP_C" in items ||
+              jsettings.UZI && "Item_Weapon_UZI_C" in items ||
+              jsettings.Vector && "Item_Weapon_Vector_C" in items ||
 
 
               jsettings.QDSnipe && "Item_Attach_Weapon_Magazine_ExtendedQuickDraw_SniperRifle_C" in items ||
@@ -1643,8 +1720,14 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
               jsettings.FlashHiderAR && "Item_Attach_Weapon_Muzzle_FlashHider_Large_C" in items ||
               jsettings.CompensatorAR && "Item_Attach_Weapon_Muzzle_Compensator_Medium_C" in items ||
               jsettings.Foregrip && "Item_Attach_Weapon_Lower_Foregrip_C" in items ||
-              jsettings.AngledForegrip && "Item_Attach_Weapon_Lower_AngledForeGrip_C" in items
+              jsettings.AngledForegrip && "Item_Attach_Weapon_Lower_AngledForeGrip_C" in items ||
 
+
+              jsettings.G18 && "Item_Weapon_G18_C" in items ||
+              jsettings.Rhino45 && "Item_Weapon_Rhino_C" in items ||
+              jsettings.M1911 && "Item_Weapon_M1911_C" in items ||
+              jsettings.R1895 && "Item_Weapon_NagantM1895_C" in items ||
+              jsettings.M9 && "Item_Weapon_M9_C" in items
       ) {
         // If The Setting is true (boolean) and Item_ is in Items, Don't draw disabled item.
       }
@@ -1659,7 +1742,7 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
           draw(adt, x + 50, y, 0f, airDropTextScale, it._3)
 
         } else {
-          draw(icon, x, y, 0f, scale, it._3)
+          draw(icon, x, y, 0f + 90, scale, it._3)
         //println(itemHeight)
         }
       }
@@ -1689,6 +1772,9 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
       val equippedWeapons = actorHasWeapons[actor.netGUID]
       val df = DecimalFormat("###.#")
       var weapon = ""
+
+   //  spriteBatch.transformMatrix = Matrix4().setToRotation(Vector3(0f, 0f, 1f), 90f)
+
       if (equippedWeapons != null)
       {
         for (w in equippedWeapons)
@@ -1710,100 +1796,84 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
         items += "${element._1}->${element._2}\n"
       }
 
+      when (nameToggles) {
 
-      when (nameToggles)
-      {
-
-        0 ->
-        {
+        0 -> {
         }
 
-        1 ->
-        {
+        1 -> {
           nameFont.draw(
-                spriteBatch,
-                "$angle°${distance}m\n" +
-                "|N: $name\n" +
-                "|H: \n" +
-                "|K: ($numKills)\nTN.($teamNumber)\n" +
-                "|S: \n" +
-                "|W: $weapon" +
-                "|I: $items"
+                  spriteBatch,
+                  "$angle°${distance}m\n" +
+                          "|N: $name\n" +
+                          "|H: \n" +
+                          "|K: ($numKills)\nTN.($teamNumber)\n" +
+                          "|S: \n" +
+                          "|W: $weapon" +
+                          "|I: $items"
 
-                , sx + 20, windowHeight - sy + 20
-                       )
+                  , sx + 20, windowHeight - sy + 20
+          )
 
           val healthText = health
-          when
-          {
+          when {
             healthText > 80f -> hpgreen.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 9)
             healthText > 33f -> hporange.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 9)
-            else             -> hpred.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 9)
+            else -> hpred.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 9)
           }
 
           if (actor is Character)
-            when
-            {
-              actor.isGroggying ->
-              {
-                hpred.draw(spriteBatch, "Knocked", sx + 40, windowHeight - sy + -42)
+            when {
+              actor.isGroggying -> {
+                hpred.draw(spriteBatch, "DOWNED", sx + 40, windowHeight - sy + -42)
               }
-              actor.isReviving  ->
-              {
+              actor.isReviving -> {
                 hporange.draw(spriteBatch, "GETTING REVIVED", sx + 40, windowHeight - sy + -42)
               }
-              else              -> hpgreen.draw(spriteBatch, "Alive", sx + 40, windowHeight - sy + -42)
+              else -> hpgreen.draw(spriteBatch, "Alive", sx + 40, windowHeight - sy + -42)
             }
-
         }
-        2 ->
-        {
+        2 -> {
           nameFont.draw(
-                spriteBatch, "${distance}m\n" +
-                             "|N: $name\n" +
-                             "|H: ${df.format(health)}\n" +
-                             "|W: $weapon",
-                sx + 20, windowHeight - sy + 20
-                       )
+                  spriteBatch, "${distance}m\n" +
+                  "|N: $name\n" +
+                  "|H: ${df.format(health)}\n" +
+                  "|W: $weapon",
+                  sx + 20, windowHeight - sy + 20
+          )
         }
-        3 ->
-        {
+        3 -> {
 
           nameFont.draw(spriteBatch, "|N: $name\n|D: ${distance}m", sx + 20, windowHeight - sy + 20)
           // rectLine(x - width / 2, hpY, x - width / 2 + healthWidth, hpY, height)
         }
-        4 ->
-        {
+        4 -> {
 
           // Change color of hp
           val healthText = health
-          when
-          {
+          when {
             healthText > 80f -> hpgreen.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 8)
             healthText > 33f -> hporange.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 8)
-            else             -> hpred.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 8)
+            else -> hpred.draw(spriteBatch, "\n${df.format(health)}", sx + 40, windowHeight - sy + 8)
 
           }
           nameFont.draw(
-                spriteBatch, "|N: $name\n|D: ${distance}m $angle°\n" +
-                             "|H:\n" +
-                             "|S:\n" +
-                             "|W: $weapon",
-                sx + 20, windowHeight - sy + 20
-                       )
+                  spriteBatch, "|N: $name\n|D: ${distance}m $angle°\n" +
+                  "|H:\n" +
+                  "|S:\n" +
+                  "|W: $weapon",
+                  sx + 20, windowHeight - sy + 20
+          )
 
           if (actor is Character)
-            when
-            {
-              actor.isGroggying ->
-              {
-                hpred.draw(spriteBatch, "Knocked", sx + 40, windowHeight - sy + -16)
+            when {
+              actor.isGroggying -> {
+                hpred.draw(spriteBatch, "DOWNED", sx + 40, windowHeight - sy + -16)
               }
-              actor.isReviving  ->
-              {
+              actor.isReviving -> {
                 hporange.draw(spriteBatch, "GETTING REVIVED", sx + 40, windowHeight - sy + -16)
               }
-              else              -> hpgreen.draw(spriteBatch, "Alive", sx + 40, windowHeight - sy + -16)
+              else -> hpgreen.draw(spriteBatch, "Alive", sx + 40, windowHeight - sy + -16)
             }
         }
       }
@@ -1973,7 +2043,9 @@ class GLMap(private val jsettings : Settings.jsonsettings) : InputAdapter(), App
     windowWidth = width.toFloat()
     windowHeight = height.toFloat()
     mapCamera.setToOrtho(true, windowWidth * windowToMapUnit, windowHeight * windowToMapUnit)
+    isolatedCamera.setToOrtho(true, windowWidth * windowToMapUnit, windowHeight * windowToMapUnit)
     fontCamera.setToOrtho(false, windowWidth, windowHeight)
+    playerCamera.setToOrtho( false, windowWidth, windowHeight)
   }
 
   override fun pause()
