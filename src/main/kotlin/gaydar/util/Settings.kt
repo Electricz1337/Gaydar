@@ -78,7 +78,20 @@ class Settings
         val Mini14 : Boolean = false,
         var SKS : Boolean = false,
         val AK47 : Boolean = false,
+        val DP28 : Boolean = false,
+        val Saiga12 : Boolean = false,
         val UMP : Boolean = false,
+        val Vector : Boolean = false,
+        val UZI : Boolean = false,
+
+        //
+        // Pistols
+        //
+        val G18 : Boolean = false,
+        val Rhino45 : Boolean = false,
+        val M1911 : Boolean = false,
+        val R1895 : Boolean = false,
+        val M9 : Boolean = false,
 
         //
         // Meds
@@ -134,6 +147,8 @@ class Settings
 
         // Toggle Mini-Map
         var drawDaMap : Int = 1,
+        val northMiniMap: Int = -1,
+        val onlyNorthMap: Int = -1,
         // private var toggleVehicles = -1
         //  private var toggleVNames = -1
 
@@ -156,11 +171,13 @@ class Settings
         //
         val nameToogle_Key : String = Input.Keys.toString(Input.Keys.F1),
         val VehicleInfoToggles_Key : String = Input.Keys.toString(Input.Keys.F5),
-        val ZoomToggles_Key : String = Input.Keys.toString(Input.Keys.NUMPAD_8),
+        val ZoomToggles_Key : String = Input.Keys.toString(Input.Keys.NUM_8),
 
         val drawcompass_Key : String = Input.Keys.toString(Input.Keys.F2),
         val toggleView_Key : String = Input.Keys.toString(Input.Keys.F4),
         val drawDaMap_Key : String = Input.Keys.toString(Input.Keys.F3),
+        val northMiniMap_Key : String = Input.Keys.toString(Input.Keys.F6),
+        val onlyNorthMap_Key : String = Input.Keys.toString(Input.Keys.F7),
         val drawmenu_Key : String = Input.Keys.toString(Input.Keys.F12),
 
         val filterWeapon_Key : String = Input.Keys.toString(Input.Keys.NUM_1),
@@ -238,9 +255,11 @@ class Settings
         val hpred_color : Color = Color.RED
 
 
-                         )
+                         ) {
 
-  val settingsname = "settings.json"
+  }
+
+    val settingsname = "settings.json"
 
   fun loadsettings() : jsonsettings
   {
